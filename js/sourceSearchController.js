@@ -1,39 +1,35 @@
 angular.module("myApp")
-    .controller("CompanySearchController", function ($scope) {
-        $scope.companyData = [{
-                name: "company A",
-                ticker: "ca",
-                title: "wank"
+    .controller("SourceSearchController", function ($scope) {
+        $scope.sourceData = [{
+                key: "source A"
             },
             {
-                name: "Alibaba",
-                ticker: "baba",
-                title: "baba Alibaba?"
+                key: "Bloomberg"
             }
         ];
 
         var onSuccess = function (result) {
-            $scope.companyData = result.data;
-            console.info("company lookup result: " + result)
+            $scope.sourceData = result.data;
+            console.info("source lookup result: " + result)
         }
         var onError = function (reason) {
-            console.error("company data error: " + reason)
+            console.error("source data error: " + reason)
         }
 
-        $scope.onCompanySelected = function (selected_company) {
-            if (!selected_company) {
+        $scope.onSourceSelected = function (selected_source) {
+            if (!selected_source) {
                 return;
             }
-            if (!selected_company.description) {
+            if (!selected_source.description) {
                 return;
             }
-            var ticker = selected_company.description.ticker;
-            var filter = "company_ticker==" + ticker;
-            var company_filter_element = $(document.getElementById(filter));
-            if (company_filter_element) {
-                if (company_filter_element.hasClass('lg_orange')) {} else {
+            var ticker = selected_source.description.ticker;
+            var filter = "source_ticker==" + ticker;
+            var source_filter_element = $(document.getElementById(filter));
+            if (source_filter_element) {
+                if (source_filter_element.hasClass('lg_orange')) {} else {
                     // this is a wrong link to element
-                    // company_filter_element.addClass('lg_orange');
+                    // source_filter_element.addClass('lg_orange');
                     $scope.ctrl.newsitems = [];
                     // trigger a new search
                     $scope.searchObject["startAt"] = 0;
