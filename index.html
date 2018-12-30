@@ -13,6 +13,7 @@
 
     <script src="./js/app.js"></script>
     <script src="./js/companySearchController.js"></script>
+    <script src="./js/sourceSearchController.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angucomplete-alt/3.0.0/angucomplete-alt.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
@@ -25,7 +26,7 @@
         <div class="item">
             <a class="active title">
                 <i class="dropdown icon"></i>
-                Search
+                Search company
             </a>
             <div class="active content">
                 <div class="ui form">
@@ -34,6 +35,25 @@
                             <div angucomplete-alt id="company-search" placeholder="Search for a company" maxlength="150"
                                 pause="150" selected-object="onCompanySelected" local-data="companyData" search-fields="ticker,name"
                                 title-field="title" minlength="2" input-class="form-control form-control-small"
+                                match-class="autocomplete-highlight">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <a class="title">
+                <i class="dropdown icon"></i>
+                Search source
+            </a>
+            <div class="content">
+                <div class="ui form">
+                    <div class=" active content" ng-controller="SourceSearchController">
+                        <div>
+                            <div angucomplete-alt id="source-search" placeholder="Search for a source" maxlength="150"
+                                pause="150" selected-object="onSourceSelected" local-data="sourceData" search-fields="key"
+                                title-field="key" minlength="2" input-class="form-control form-control-small"
                                 match-class="autocomplete-highlight">
                             </div>
                         </div>
