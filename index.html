@@ -14,6 +14,7 @@
     <script src="./js/app.js"></script>
     <script src="./js/companySearchController.js"></script>
     <script src="./js/sourceSearchController.js"></script>
+    <script src="./js/newsItemsController.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angucomplete-alt/3.0.0/angucomplete-alt.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
@@ -22,115 +23,259 @@
 
 <body ng-app="myApp">
 
-    <div class="ui vertical accordion menu">
-        <div class="item">
-            <a class="active title">
-                <i class="dropdown icon"></i>
-                Search company
-            </a>
-            <div class="active content">
-                <div class="ui form">
-                    <div class=" active content" ng-controller="CompanySearchController">
-                        <div>
-                            <div angucomplete-alt id="company-search" placeholder="Search for a company" maxlength="150"
-                                pause="150" selected-object="onCompanySelected" local-data="companyData" search-fields="ticker,name"
-                                title-field="title" minlength="2" input-class="form-control form-control-small"
-                                match-class="autocomplete-highlight">
-                            </div>
+
+
+    <div class="pusher">
+        <div class="ui stackable grid">
+            <!-- TODO check if this column surrounds the correct pieces of html -->
+            <div class="sixteen wide doubling column">
+                <div class="ui huge top fixed menu " style="height: 78px;">
+                    <div class="item">
+                        <span style="color:#00A2BD!important;padding-left: 15px;">Robeco ESG Radar</span>
+                    </div>
+                    <div class="menu" style="width: calc(100%)">
+                        <div class="item" style="    padding: .42857143em 0.74285714em;    width: 100%;">
+                            <form class="ui search" ng-submit="newSearch()" style="width: 100%;">
+                                <div class="ui  transparent icon input" id="search_input" style="    width: 100%;">
+                                    <input id="searchbox" autocomplete="off" class="prompt" style="   border-radius: 0px;  height: 50px;"
+                                        autofocus type="text" placeholder="'SEARCH_PLACEHOLDER'">
+                                    <button class="ui big basic icon button" style="padding: 0px;box-shadow: 0 0 0 0px rgba(34,36,38,.15) inset;">
+                                        <i class="search icon"></i>
+                                    </button>
+                                </div>
+                                <div class="results"></div>
+                            </form>
                         </div>
+                    </div>
+                    <div class="item">
+                        <a class="ui" href="/">
+                            <i class="home icon homePageQuery"></i>
+                        </a>
+                    </div>
+                    <div class="item" onClick="$('.ui.labeled.icon.sidebar').sidebar('toggle');">
+                        <a class="ui">
+                            <i class="sidebar icon"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="item">
-            <a class="title">
-                <i class="dropdown icon"></i>
-                Search source
-            </a>
-            <div class="content">
-                <div class="ui form">
-                    <div class=" active content" ng-controller="SourceSearchController">
-                        <div>
-                            <div angucomplete-alt id="source-search" placeholder="Search for a source" maxlength="150"
-                                pause="150" selected-object="onSourceSelected" local-data="sourceData" search-fields="key"
-                                title-field="key" minlength="2" input-class="form-control form-control-small"
-                                match-class="autocomplete-highlight">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="ui grid" style="margin-top: 4.5rem!important;">
+            <div class="four wide column computer only" style="text-align: left;" ng-show="showTimeline">
+            </div>
+            <div class="four wide column computer only" style="text-align: left; padding-top: 17px;">
+                <span style="margin-right: 20px">Found {{ctrl.nrOfDocuments}} articles {{resultsText}}<i>{{searchObject.searchQuery}}</i></span>
+            </div>
+            <div class="eight wide column computer only" style="text-align: right; padding-top: 17px;">
+                Sort by: <a class="sort-button" ng-class="{'active-sort': searchObject.sortBy!='relevance'}" href=""
+                    ng-click="sortby('post_published');">DATE</a> | <a href="" class="sort-button" ng-class="{'active-sort': searchObject.sortBy=='relevance'}"
+                    ng-click="sortby('relevance');">RELEVANCE</a>
             </div>
         </div>
-        <div class="item">
-            <a class="title">
-                <i class="dropdown icon"></i>
-                Size
-            </a>
-            <div class=" content">
-                <div class="ui form">
-                    <div class="grouped fields">
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" name="size" value="small">
-                                <label>Small</label>
+        <div class="ui stackable grid itemgrid ">
+            <div class="three wide column computer only" id="sticky_content " style="padding-top: 0px; ">
+                <div class="fixedMenuElement">
+                    <div class="ui vertical accordion menu">
+                        <div class="item">
+                            <a class="active title">
+                                <i class="dropdown icon"></i>
+                                Search company
+                            </a>
+                            <div class="active content">
+                                <div class="ui form">
+                                    <div class=" active content" ng-controller="CompanySearchController">
+                                        <div>
+                                            <div angucomplete-alt id="company-search" placeholder="Search for a company"
+                                                maxlength="150" pause="150" selected-object="onCompanySelected"
+                                                local-data="companyData" search-fields="ticker,name" title-field="title"
+                                                minlength="2" input-class="form-control form-control-small" match-class="autocomplete-highlight">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" name="size" value="medium">
-                                <label>Medium</label>
+                        <div class="item">
+                            <a class="title">
+                                <i class="dropdown icon"></i>
+                                Search source
+                            </a>
+                            <div class="content">
+                                <div class="ui form">
+                                    <div class=" active content" ng-controller="SourceSearchController">
+                                        <div>
+                                            <div angucomplete-alt id="source-search" placeholder="Search for a source"
+                                                maxlength="150" pause="150" selected-object="onSourceSelected"
+                                                local-data="sourceData" search-fields="key" title-field="key" minlength="2"
+                                                input-class="form-control form-control-small" match-class="autocomplete-highlight">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" name="size" value="large">
-                                <label>Large</label>
+                        <div class="item">
+                            <a class="title">
+                                <i class="dropdown icon"></i>
+                                Size
+                            </a>
+                            <div class=" content">
+                                <div class="ui form">
+                                    <div class="grouped fields">
+                                        <div class="field">
+                                            <div class="ui radio checkbox">
+                                                <input type="radio" name="size" value="small">
+                                                <label>Small</label>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui radio checkbox">
+                                                <input type="radio" name="size" value="medium">
+                                                <label>Medium</label>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui radio checkbox">
+                                                <input type="radio" name="size" value="large">
+                                                <label>Large</label>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui radio checkbox">
+                                                <input type="radio" name="size" value="x-large">
+                                                <label>X-Large</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" name="size" value="x-large">
-                                <label>X-Large</label>
+                        <div class="item">
+                            <a class="title">
+                                <i class="dropdown icon"></i>
+                                Colors
+                            </a>
+                            <div class="content">
+                                <div class="ui form">
+                                    <div class="grouped fields">
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" name="small">
+                                                <label>Red</label>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" name="medium">
+                                                <label>Orange</label>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" name="large">
+                                                <label>Green</label>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" name="x-large">
+                                                <label>Blue</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-        </div>
-        <div class="item">
-            <a class="title">
-                <i class="dropdown icon"></i>
-                Colors
-            </a>
-            <div class="content">
-                <div class="ui form">
-                    <div class="grouped fields">
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <input type="checkbox" name="small">
-                                <label>Red</label>
-                            </div>
+            <div class="thirteen wide column " id="main_content " style="padding-top: 0px!important; " infinite-scroll="showMoreResults()
+                    "
+                infinite-scroll-disabled="pauseScroll ">
+
+                <!-- THE NEWSITEMS -->
+                <div class="ui active tab" data-tab="tab-name2" ng-controller="NewsItemsController">
+                    <div class="ui three doubling column stackable cards">
+                        <div class="ui active centered medium inline loader" ng-hide="!isLoading" style="margin-top:35px;margin-bottom:35px">
                         </div>
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <input type="checkbox" name="medium">
-                                <label>Orange</label>
+                        <div class="ui card" ng-repeat="item in newsitems track by $index" droppable="true" id="{{item.id}}">
+                            <div class="content">
+                                <a class="header" target="_blank" href="{{item.link}}">{{item.title}}</a>
+                                <div class="meta">
+                                    <span style="margin-right: 0px;" disabled-am-time-ago="item.publish_date">
+                                        {{item.date_published | date:'dd/MM/yyyy'}}
+                                    </span> on {{item.source_name.replace("www.","").replace("http://","") |
+                                    lowercase}}
+                                    <br>
+                                    <div class="article-popup" data-position="top center">
+                                        <!-- TODO This is for showing the BUCKETS replace this ev in item.annotations.events_value with correct structure/values -->
+                                        <div class="ui tiny label rounded" style="margin-top: 5px;margin-left: 0px;"
+                                            ng-repeat="(bucket, keywords) in item.annotations | objLimitTo:10 ">
+                                            {{bucket | capitalize:true}}
+                                        </div>
+                                        <div class="hover-for-more">
+                                            hover over for more...
+                                        </div>
+                                    </div>
+                                    <div class="ui wide popup keyword-tooltip">
+                                        <table class="keyword-cloud-bucket-set">
+                                            <tr ng-repeat="(bucket, keywords) in item.annotations | limitTo:10 track by $index">
+                                                <td class="keyword-cloud-title">{{bucket}}</td>
+
+                                                <td>
+                                                    <span class="keyword-cloud-item ui mini label rounded" ng-repeat="keyword in keywords track by $index">{{keyword}}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="description">
+                                    {{item.snippet.substring(0, 400)}}...
+                                </div>
                             </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <input type="checkbox" name="large">
-                                <label>Green</label>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <input type="checkbox" name="x-large">
-                                <label>Blue</label>
+                            <div class="extra content">
+                                <div>
+                                    <i ng-click="addToReadingList(item)" style="margin: 0 0 0 -2px;" class="link icon plus"></i>
+                                    <i ng-click="thumbsUp(item.id,$index)" style="margin-right: 2px;" ng-class="{'':thumbsUpClickedbyUser(),'outline': !thumbsUpClickedbyUser()}"
+                                        class="link thumbs up green icon"></i>{{item.feedback.thumbsup ?
+                                    item.feedback.thumbsup : 0}}
+                                    <i ng-click="thumbsDown(item.id,$index)" style="margin-right: 2px;" ng-class="{'':thumbsDownClickedbyUser(),'outline': !thumbsDownClickedbyUser()}"
+                                        class="link thumbs down red icon"></i>{{item.feedback.thumbsdown ?
+                                    item.feedback.thumbsdown : 0}}
+                                    <a href="javascript:void(0)" ng-click="openItemFeedbackEmail(item)" style="float: right;">
+                                        <i class="link share alternate icon"></i>
+                                        'SHARE'
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+
+                    <div style="display:none" class="ui center aligned basic segment" ng-hide="isLoading || ctrl.nrOfDocuments < 1 || isError || ctrl.nrOfDocuments <= ctrl.nrOfResults || ctrl.newsitems.length >= ctrl.nrOfDocuments">
+                        <button class="ui fluid basic button">
+                            <i class="icon chevron down"></i>
+                            'VIEW_MORE'
+                        </button>
+                    </div>
                 </div>
+                <!-- THE TIMELINE -->
+                <div class="ui tab " data-tab="tab-name3" ng-show="showTimeline">
+                    <div class="ui active centered medium inline loader" ng-hide="!isLoading" style="margin-top:35px;margin-bottom:35px">
+                    </div>
+                    <div ng-hide="isLoading || ctrl.nrOfDocuments < 1" class="timeline-wrapper" height="600" style="min-width: 500px;min-height:600px;background-repeat: no-repeat;background-position: center;"
+                        ng-click="initTimelineFromTab()" onClick="$('.timeline-wrapper').css('background', '')">
+                        <pipp-timeline-j-s reloadtimeline="reloadtimeline" source="timelineData" height="600" width="800"
+                            start-zoom-adjust="0" start-at-end="true" start-at-slide="0" hash-bookmark="false" lang="en"
+                            slide="index" debug="false">
+                        </pipp-timeline-j-s>
+                    </div>
+
+
+                </div>
+                <!-- end timeline div -->
+                <!--  end column and grid -->
             </div>
         </div>
     </div>
